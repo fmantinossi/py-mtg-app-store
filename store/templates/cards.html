@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="search-container">
+    <form method="GET" action="{% url 'cards' %}" class="search-form">
+        <input type="text" name="search" placeholder="Search cards..." value="{{ request.GET.search|default:'' }}" class="search-input">
+        <button type="submit" class="search-button">Search</button>
+    </form>
+</div>
+<div class="card-grid">
+    {% for card in cards %}
+    <div class="card-item">
+        <div class="card-image-container">
+            {% if card.image and card.image.image_file %}
+                <img src="{{ card.image.image_file.url }}" alt="{{ card.name }}">
+            {% else %}
+                <div class="no-image">No Image</div>
+            {% endif %}
+        </div>
+        <div class="card-content">
+            <div class="card-name">{{ card.name }}</div>
+            <div class="card-details">
+                <span class="mana-cost">{{ card.mana_cost }}</span>
+                <span class="card-price">R$ {{ card.price }}</span>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
