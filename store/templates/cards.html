@@ -1,31 +1,55 @@
-{% extends 'base.html' %}
-{% load static %}
-
-{% block content %}
-<div class="search-container">
-    <form method="GET" action="{% url 'cards' %}" class="search-form">
-        <input type="text" name="search" placeholder="Search cards..." value="{{ request.GET.search|default:'' }}" class="search-input">
-        <button type="submit" class="search-button">Search</button>
-    </form>
-</div>
+{% extends 'base.html' %} {% load static %} {% block content %}
 <div class="card-grid">
-    {% for card in cards %}
+  {% for card in cards %}
+  <a href="{% url 'card_detail' card.pk %}" class="card-link">
     <div class="card-item">
-        <div class="card-image-container">
-            {% if card.image and card.image.image_file %}
-                <img src="{{ card.image.image_file.url }}" alt="{{ card.name }}">
-            {% else %}
-                <div class="no-image">No Image</div>
-            {% endif %}
+      <div class="card-image-container">
+        {% if card.image and card.image.image_file %}
+        <img src="{{ card.image.image_file.url }}" alt="{{ card.name }}" />
+        {% else %}
+        <div class="no-image">No Image</div>
+        {% endif %}
+      </div>
+      <div class="card-content">
+        <div class="card-name">{{ card.name }}</div>
+        <div class="card-details">
+          <span class="mana-cost">{{ card.mana_cost }}</span>
+          <span class="card-price">R$ {{ card.price }}</span>
         </div>
-        <div class="card-content">
-            <div class="card-name">{{ card.name }}</div>
-            <div class="card-details">
-                <span class="mana-cost">{{ card.mana_cost }}</span>
-                <span class="card-price">R$ {{ card.price }}</span>
-            </div>
-        </div>
+      </div>
     </div>
-    {% endfor %}
+  </a>
+  {% endfor %}
 </div>
-{% endblock %}
+
+{% if is_paginated %}
+<div class="pagination">
+  <div class="step-links">
+    {% if page_obj.has_previous %}
+    <a
+      href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"
+      >&laquo; First</a
+    >
+    <a
+      href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"
+      >Previous</a
+    >
+    {% endif %}
+
+    <span class="current">
+      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    </span>
+
+    {% if page_obj.has_next %}
+    <a
+      href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"
+      >Next</a
+    >
+    <a
+      href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"
+      >Last &raquo;</a
+    >
+    {% endif %}
+  </div>
+</div>
+{% endif %} {% endblock %}

@@ -10,11 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+from dotenv import load_dotenv
 from pathlib import Path
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")
 
 
 # Quick-start development settings - unsuitable for production
@@ -77,8 +79,12 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME", "mtg_db"),
+        "USER": os.getenv("DB_USER", "mtg_user"),
+        "PASSWORD": os.getenv("DB_PASSWORD", "mtg_pass"),
+        "HOST": os.getenv("DB_HOST", "127.0.0.1"),
+        "PORT": os.getenv("DB_PORT", "5432"),
     }
 }
 
@@ -122,3 +128,73 @@ STATIC_URL = 'static/'
 # Adicione o caminho para a pasta de imagens
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+LOG_DIR = BASE_DIR / "logs"
+os.makedirs(LOG_DIR, exist_ok=True)
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+
+    "formatters": {
+        "padrao": {
+            "format": "%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+        },
+    },
+
+    "handlers": {
+        # Requests logs (GET/POST)
+        "requests_file": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": LOG_DIR / "requests.log",
+            "maxBytes": 5 * 1024 * 1024,
+            "backupCount": 3,
+            "formatter": "padrao",
+        },
+
+        # Error logs
+        "errors_file": {
+            "level": "WARNING",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": LOG_DIR / "errors.log",
+            "maxBytes": 5 * 1024 * 1024,
+            "backupCount": 5,
+            "formatter": "padrao",
+        },
+
+        # application logs
+        "business_file": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": LOG_DIR / "business.log",
+            "maxBytes": 5 * 1024 * 1024,
+            "backupCount": 3,
+            "formatter": "padrao",
+        },
+    },
+
+    "loggers": {
+        # runserver logs (GET/POST 200/304)
+        "django.server": {
+            "handlers": ["requests_file"],
+            "level": "INFO",
+            "propagate": False,
+        },
+
+        # django errors (500, exceptions)
+        "django.request": {
+            "handlers": ["errors_file"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+
+        # application/business logs
+        "store": {
+            "handlers": ["business_file"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}

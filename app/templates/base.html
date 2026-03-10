@@ -14,8 +14,28 @@
 </head>
 <body>
     <header class="main-header">
-        <div class="header-container">
-            <a href="{% url 'cards' %}" class="logo">MTG Store</a>
+        <div class="header-container stacked-header">
+            <div class="header-top">
+                <a href="{% url 'cards' %}" class="logo">
+                    <img src="{% static 'store/images/new_principal_logo_site.png' %}" alt="MTG Store Logo" class="logo-image">
+                </a>
+                
+                <div class="header-search">
+                    <form method="GET" action="{% url 'cards' %}" class="search-form">
+                        <input
+                            type="text"
+                            name="search"
+                            placeholder="Search cards..."
+                            value="{{ request.GET.search|default:'' }}"
+                            class="search-input"
+                        />
+                        <button type="submit" class="search-button">Search</button>
+                    </form>
+                </div>
+                
+                <div class="header-spacer"></div>
+            </div>
+
             <nav class="main-nav">
                 {% if user.is_authenticated %}
                     <a href="{% url 'cards' %}" class="nav-link">Cards</a>
@@ -24,9 +44,9 @@
                 {% endif %}
 
                 {% if not user.is_authenticated%}
+                    <a href="{% url 'cards' %}" class="nav-link">Cards</a>
                     <a href="{% url 'register' %}" class="nav-link">Register</a>    
                     <a href="{% url 'login' %}" class="nav-link">Log in</a>
-                    <a href="{% url 'cards' %}" class="nav-link">Cards</a>
                 {% endif %}
             </nav>
         </div>

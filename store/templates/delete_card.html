@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="card-form-container delete-confirmation-container">
+    <div class="card-form-header">
+        <h1>Delete Card</h1>
+        <p class="warning-text">Are you sure you want to delete the card <strong>"{{ card.name }}"</strong>?</p>
+        <p class="sub-warning">This action cannot be undone.</p>
+    </div>
+
+    <form method="POST" class="modern-card-form">
+        {% csrf_token %}
+        
+        <div class="form-actions confirmation-actions">
+            <button type="submit" class="submit-button delete-confirm-button">Confirm Delete</button>
+            <a href="{% url 'card_detail' card.pk %}" class="back-button">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

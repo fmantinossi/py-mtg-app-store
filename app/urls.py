@@ -18,13 +18,16 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from store.views import CardsView, new_card_view
+from store.views import CardsView, NewCardView, DetailCardView, UpdateCardView, DeleteCardView
 from accounts.views import register_view, login_view, logout_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('cards/', CardsView.as_view(), name='cards'),
-    path('new_card/', new_card_view, name='new_card'),
+    path('cards/<int:pk>/', DetailCardView.as_view(), name='card_detail'),
+    path('cards/<int:pk>/update/', UpdateCardView.as_view(), name='card_update'),
+    path('cards/<int:pk>/delete/', DeleteCardView.as_view(), name='card_delete'),
+    path('new_card/', NewCardView.as_view(), name='new_card'),
     path('register/', register_view, name='register'),
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout')

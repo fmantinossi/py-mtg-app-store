@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="card-detail-container">
+    <div class="card-detail-grid">
+        <!-- Left Side: Image -->
+        <div class="card-detail-image-section">
+            <div class="card-detail-image-wrapper">
+                {% if card.image and card.image.image_file %}
+                    <img src="{{ card.image.image_file.url }}" alt="{{ card.name }}">
+                {% else %}
+                    <div class="no-image-detail">No Image Available</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Right Side: Data -->
+        <div class="card-detail-info-section">
+            <h1 class="detail-card-name">{{ card.name }}</h1>
+            
+            <div class="detail-main-header">
+                <span class="detail-mana-cost">{{ card.mana_cost }}</span>
+                <span class="detail-price">R$ {{ card.price }}</span>
+            </div>
+
+            <div class="detail-section">
+                <h3>Card Info</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Type:</span>
+                        <span class="info-value">{{ card.type_line }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">CMC:</span>
+                        <span class="info-value">{{ card.cmc }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Color:</span>
+                        <span class="info-value">{{ card.colors.name }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Power / Toughness:</span>
+                        <span class="info-value">{{ card.power }} / {{ card.toughness }}</span>
+                    </div>
+                </div>
+            </div>
+
+            {% if card.oracle_text %}
+            <div class="detail-section">
+                <h3>Oracle Text</h3>
+                <div class="oracle-text-box">
+                    {{ card.oracle_text|linebreaks }}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="detail-section">
+                <h3>Set & Rarity</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Set:</span>
+                        <span class="info-value">{{ card.set.name }} ({{ card.set.code }})</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Rarity:</span>
+                        <span class="info-value">{{ card.rarity.name }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Release Date:</span>
+                        <span class="info-value">{{ card.set.release_date|date:"M d, Y" }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-actions">
+                <a href="{% url 'cards' %}" class="back-button">Back to Collection</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'card_update' card.pk %}" class="update-button">Update Card</a>
+                    <a href="{% url 'card_delete' card.pk %}" class="delete-button">Delete Card</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
